@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sonrisa Imperial | Clínica Dental</title>
+  <meta name="description" content="Sonrisa Imperial, clínica dental. Agenda tu cita en minutos." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <span class="brand">Sonrisa Imperial</span>
+      <a href="#agendar" class="btn btn-primary btn-small">Agendar cita</a>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-inner">
+        <h1>Cuidado dental de excelencia, pensado para ti.</h1>
+        <p class="hero-subtext">
+          Agenda tu cita en minutos y da el primer paso hacia la sonrisa que mereces.
+        </p>
+        <a href="#agendar" class="btn btn-primary">Agendar cita</a>
+      </div>
+    </section>
+
+    <section class="values">
+      <div class="container values-grid">
+        <div class="value-item">
+          <h3>Atención personalizada</h3>
+          <p>Cada paciente recibe un plan de tratamiento a su medida.</p>
+        </div>
+        <div class="value-item">
+          <h3>Equipo profesional</h3>
+          <p>Odontólogos con años de experiencia y formación continua.</p>
+        </div>
+        <div class="value-item">
+          <h3>Ambiente cómodo</h3>
+          <p>Instalaciones modernas pensadas para tu tranquilidad.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="agendar" class="appointment">
+      <div class="container appointment-inner">
+        <h2>Agenda tu cita</h2>
+        <p class="appointment-subtext">
+          Completa el formulario y te contactaremos por WhatsApp para confirmar tu horario.
+        </p>
+
+        <form id="appointment-form" class="appointment-form">
+          <div class="form-group">
+            <label for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" required />
+          </div>
+
+          <div class="form-group">
+            <label for="telefono">Teléfono</label>
+            <input type="tel" id="telefono" name="telefono" required />
+          </div>
+
+          <div class="form-group">
+            <label for="fecha">Fecha preferida</label>
+            <input type="date" id="fecha" name="fecha" required />
+          </div>
+
+          <div class="form-group">
+            <label for="mensaje">Mensaje (opcional)</label>
+            <textarea id="mensaje" name="mensaje" rows="3"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-full">Enviar solicitud</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="brand brand-small">Sonrisa Imperial</span>
+      <p>Clínica dental &middot; Agenda tu cita hoy</p>
+      <p class="footer-copy">&copy; <span id="year"></span> Sonrisa Imperial. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

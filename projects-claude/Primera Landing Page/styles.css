@@ -1,0 +1,251 @@
+:root {
+  --color-bg: #ffffff;
+  --color-bg-alt: #f6f5f1;
+  --color-primary: #0b3d3b;
+  --color-primary-dark: #072826;
+  --color-accent: #c9a227;
+  --color-text: #1a2421;
+  --color-text-muted: #55625e;
+  --color-border: #e4e2da;
+
+  --font-heading: "Playfair Display", Georgia, serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --max-width: 1080px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-heading);
+  color: var(--color-primary-dark);
+  margin: 0;
+}
+
+/* Header */
+.site-header {
+  position: sticky;
+  top: 0;
+  background: var(--color-bg);
+  border-bottom: 1px solid var(--color-border);
+  z-index: 10;
+}
+
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+.brand {
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--color-primary-dark);
+  letter-spacing: 0.02em;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  text-decoration: none;
+  font-family: var(--font-body);
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  border: none;
+  transition: opacity 0.15s ease;
+}
+
+.btn:hover {
+  opacity: 0.88;
+}
+
+.btn-primary {
+  background: var(--color-accent);
+  color: var(--color-primary-dark);
+  padding: 14px 32px;
+  font-size: 1rem;
+}
+
+.btn-small {
+  padding: 10px 20px;
+  font-size: 0.9rem;
+}
+
+.btn-full {
+  width: 100%;
+  padding: 14px;
+  font-size: 1rem;
+}
+
+/* Hero */
+.hero {
+  background: var(--color-primary);
+  color: #ffffff;
+  padding: 96px 0;
+  text-align: center;
+}
+
+.hero-inner {
+  max-width: 640px;
+}
+
+.hero h1 {
+  color: #ffffff;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.25;
+  margin-bottom: 20px;
+}
+
+.hero-subtext {
+  font-size: 1.1rem;
+  color: #d8e3e1;
+  margin-bottom: 32px;
+}
+
+/* Values */
+.values {
+  padding: 80px 0;
+  background: var(--color-bg-alt);
+}
+
+.values-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 40px;
+  text-align: center;
+}
+
+.value-item h3 {
+  font-size: 1.15rem;
+  margin-bottom: 10px;
+}
+
+.value-item p {
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+/* Appointment */
+.appointment {
+  padding: 96px 0;
+}
+
+.appointment-inner {
+  max-width: 480px;
+  text-align: center;
+}
+
+.appointment h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  margin-bottom: 12px;
+}
+
+.appointment-subtext {
+  color: var(--color-text-muted);
+  margin-bottom: 40px;
+}
+
+.appointment-form {
+  text-align: left;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--color-primary-dark);
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text);
+  background: #ffffff;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+/* Footer */
+.site-footer {
+  background: var(--color-primary-dark);
+  color: #cfd9d7;
+  padding: 48px 0;
+  text-align: center;
+}
+
+.footer-inner p {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.brand-small {
+  color: #ffffff;
+  font-size: 1.2rem;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.footer-copy {
+  color: #8ea19d;
+  font-size: 0.8rem;
+  margin-top: 16px;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .values-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .hero {
+    padding: 72px 0;
+  }
+
+  .appointment {
+    padding: 72px 0;
+  }
+}
