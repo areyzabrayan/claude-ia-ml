@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diario de Estudio</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <div class="contenedor">
+
+    <header class="cabecera">
+      <h1>📚 Diario de Estudio</h1>
+      <p class="subtitulo">Registra tus sesiones y mantén tu racha</p>
+    </header>
+
+    <section class="tarjeta racha">
+      <p class="racha-numero"><span id="rachaNumero">0</span> 🔥</p>
+      <p class="racha-texto" id="rachaTexto">días de racha</p>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Nueva sesión</h2>
+      <form id="formSesion">
+        <div class="campo">
+          <label for="fecha">Fecha</label>
+          <input type="date" id="fecha" name="fecha" required>
+        </div>
+
+        <div class="campo">
+          <label for="tema">Tema</label>
+          <input type="text" id="tema" name="tema" placeholder="Ej: Matemáticas, capítulo 3" required>
+        </div>
+
+        <div class="campo">
+          <label for="minutos">Minutos</label>
+          <input type="number" id="minutos" name="minutos" min="1" step="1" placeholder="Ej: 30" required>
+        </div>
+
+        <button type="submit" class="boton">Guardar sesión</button>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <h2>Historial de sesiones</h2>
+      <ul class="lista-sesiones" id="listaSesiones">
+        <!-- Las sesiones se generan con JavaScript -->
+      </ul>
+      <p class="vacio" id="mensajeVacio">Todavía no has registrado ninguna sesión.</p>
+    </section>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
