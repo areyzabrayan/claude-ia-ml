@@ -53,6 +53,12 @@ body {
 /* ---------- Racha ---------- */
 
 .racha {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.racha-stat {
   text-align: center;
 }
 

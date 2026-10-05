@@ -36,6 +36,20 @@ The core logic to preserve when touching this file:
   `textoAFechaLocal`, `sumarDias`) — never `toISOString()` or UTC-based math, since that would
   shift the day boundary for users not in UTC.
 
+### Best-streak calculation (`calcularMejorRacha` in app.js)
+
+Shows the longest streak ever achieved, next to the live streak above. Shares
+`obtenerDiasConSesion` (unique session dates as a `Set`) with `calcularRacha`, then walks the
+sorted dates once tracking a running streak and the max seen. It deliberately does **not**
+apply the "today isn't over yet" rule from `calcularRacha` — that rule only decides whether the
+*final* streak counts as still alive for display; `calcularMejorRacha` measures each historical
+run by its real length. It's fully derived from `sesiones` on every render, like the live
+streak — there's no separate "high score" value cached in `localStorage`, so it can never drift
+out of sync with the session history (and needs no migration/initialization step for existing
+users). Invariant to keep in mind when touching this code: `calcularMejorRacha(sesiones) >=
+calcularRacha(sesiones)` always, since the live streak is by construction one of the runs it
+measures.
+
 ### Session list ordering
 
 Sorted most-recent-first by `fecha`; sessions on the same day are ordered by `creada`
