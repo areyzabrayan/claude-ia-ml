@@ -10,7 +10,11 @@ histórica y lista de sesiones.
 - Fecha editable en el formulario: permite registrar días pasados y ver la racha crecer.
 - Mejor racha calculada siempre a partir de las sesiones (sin guardar un "high score" aparte
 en localStorage): evita que se desincronice si algún día se añade editar/borrar sesiones.
+- Sesiones guardadas como { date, topic, minutes } (antes { fecha, tema, minutos, creada }),
+para que coincida con CLAUDE.md. Se quitó "creada": el orden del mismo día ahora sale de
+invertir el array guardado + sort estable por fecha.
 ## Aprendizajes y errores a evitar
-- (vacío por ahora)
+- Al cambiar la forma de los datos guardados, migrar con un fallback (ej. `?? sesion.fecha`)
+en vez de descartar lo viejo: así nadie pierde sesiones ya guardadas.
 ## Próximos pasos
 - (vacío por ahora)
