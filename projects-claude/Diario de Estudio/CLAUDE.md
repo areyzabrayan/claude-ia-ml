@@ -22,6 +22,10 @@ Date("AAAA-MM-DD")`: se interpretan en UTC y desplazan el día.
 - Racha = días consecutivos con al menos 1 sesión que terminan hoy. Si hoy no hay sesión
 pero ayer sí, la racha sigue viva y se cuenta desde ayer.
 - Varias sesiones el mismo día cuentan como un solo día. Las fechas futuras no suman.
+- Semana = lunes a domingo (local), no una ventana móvil de 7 días. El total de minutos de
+la semana suma de "lunes de esta semana" a "hoy" (fechas futuras no suman, igual que en la
+racha). A diferencia de la racha, aquí SÍ suman todas las sesiones de un mismo día, no solo
+cuenta si hubo estudio ese día.
 ## Forma de trabajar
 - Haz solo lo que se pide: no añadas funcionalidades por tu cuenta.
 - Cambios pequeños y enfocados; no reescribas lo que ya funciona.
