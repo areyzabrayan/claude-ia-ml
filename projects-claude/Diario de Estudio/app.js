@@ -11,6 +11,7 @@ const campoMinutos = document.getElementById("minutos");
 
 const rachaNumero = document.getElementById("rachaNumero");
 const rachaTexto = document.getElementById("rachaTexto");
+const mejorRachaNumero = document.getElementById("mejorRachaNumero");
 
 const listaSesiones = document.getElementById("listaSesiones");
 const mensajeVacio = document.getElementById("mensajeVacio");
@@ -58,11 +59,17 @@ function guardarSesiones(sesiones) {
 
 // ---------- Cálculo de la racha ----------
 
+// Devuelve el conjunto de fechas (texto "AAAA-MM-DD") que tienen al menos una sesión,
+// sin repetidos. Lo usan tanto calcularRacha como calcularMejorRacha.
+function obtenerDiasConSesion(sesiones) {
+  return new Set(sesiones.map((sesion) => sesion.fecha));
+}
+
 // La racha son los días consecutivos con al menos una sesión, terminando hoy.
 // Si hoy no hay sesión pero ayer sí, la racha sigue contando desde ayer
 // (todavía no se rompe porque el día de hoy no ha terminado).
 function calcularRacha(sesiones) {
-  const diasConSesion = new Set(sesiones.map((sesion) => sesion.fecha));
+  const diasConSesion = obtenerDiasConSesion(sesiones);
 
   const hoy = hoyLocal();
   const ayer = sumarDias(hoy, -1);
@@ -86,12 +93,43 @@ function calcularRacha(sesiones) {
   return racha;
 }
 
+// true si "siguienteTexto" es exactamente el día después de "fechaTexto".
+function esDiaSiguiente(fechaTexto, siguienteTexto) {
+  const diaDespues = formatearFechaLocal(sumarDias(textoAFechaLocal(fechaTexto), 1));
+  return diaDespues === siguienteTexto;
+}
+
+// La racha más larga de días consecutivos con sesión conseguida alguna vez, sea o no
+// la que sigue viva hoy. A diferencia de calcularRacha, aquí no se aplica la regla de
+// "hoy todavía no ha terminado": cada tramo del historial se mide por su longitud real.
+function calcularMejorRacha(sesiones) {
+  const diasOrdenados = [...obtenerDiasConSesion(sesiones)].sort();
+
+  let mejorRacha = 0;
+  let rachaEnCurso = 0;
+  let diaAnterior = null;
+
+  for (const dia of diasOrdenados) {
+    rachaEnCurso = diaAnterior !== null && esDiaSiguiente(diaAnterior, dia) ? rachaEnCurso + 1 : 1;
+    if (rachaEnCurso > mejorRacha) {
+      mejorRacha = rachaEnCurso;
+    }
+    diaAnterior = dia;
+  }
+
+  return mejorRacha;
+}
+
 // ---------- Mostrar la racha en pantalla ----------
 
 function pintarRacha(sesiones) {
   const racha = calcularRacha(sesiones);
   rachaNumero.textContent = racha;
   rachaTexto.textContent = racha === 1 ? "día de racha" : "días de racha";
+}
+
+function pintarMejorRacha(sesiones) {
+  mejorRachaNumero.textContent = calcularMejorRacha(sesiones);
 }
 
 // ---------- Mostrar la lista de sesiones ----------
@@ -150,6 +188,7 @@ function escaparHTML(texto) {
 function actualizarPantalla() {
   const sesiones = cargarSesiones();
   pintarRacha(sesiones);
+  pintarMejorRacha(sesiones);
   pintarLista(sesiones);
 }
 

@@ -2,12 +2,14 @@
 Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no
 aporte.
 ## Estado actual
-- v1 funcionando: registrar sesiones (fecha, tema, minutos), racha actual y lista de
-sesiones.
+- v1 funcionando: registrar sesiones (fecha, tema, minutos), racha actual, mejor racha
+histórica y lista de sesiones.
 - Datos en localStorage.
 ## Decisiones (y por qué)
 - Sin backend ni dependencias: cualquiera debe poder abrirlo con doble clic.
 - Fecha editable en el formulario: permite registrar días pasados y ver la racha crecer.
+- Mejor racha calculada siempre a partir de las sesiones (sin guardar un "high score" aparte
+en localStorage): evita que se desincronice si algún día se añade editar/borrar sesiones.
 ## Aprendizajes y errores a evitar
 - (vacío por ahora)
 ## Próximos pasos
