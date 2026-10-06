@@ -13,6 +13,7 @@ const rachaNumero = document.getElementById("rachaNumero");
 const rachaTexto = document.getElementById("rachaTexto");
 const mejorRachaNumero = document.getElementById("mejorRachaNumero");
 const minutosSemanaNumero = document.getElementById("minutosSemanaNumero");
+const diasEstudiadosMesNumero = document.getElementById("diasEstudiadosMesNumero");
 
 const listaSesiones = document.getElementById("listaSesiones");
 const mensajeVacio = document.getElementById("mensajeVacio");
@@ -154,6 +155,31 @@ function calcularMinutosSemana(sesiones) {
     .reduce((total, sesion) => total + sesion.minutes, 0);
 }
 
+// ---------- Cálculo de días estudiados este mes ----------
+
+// Devuelve el día 1 (local) del mes que contiene "fecha".
+function obtenerInicioMes(fecha) {
+  return new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+}
+
+// Cuenta los días distintos con al menos una sesión entre el día 1 de este mes y hoy
+// (inclusive). Igual que la racha, varias sesiones el mismo día cuentan como un solo
+// día; igual que la semana, las fechas futuras no suman.
+function calcularDiasEstudiadosMes(sesiones) {
+  const diasConSesion = obtenerDiasConSesion(sesiones);
+  const hoy = hoyLocal();
+  const inicioTexto = formatearFechaLocal(obtenerInicioMes(hoy));
+  const hoyTexto = formatearFechaLocal(hoy);
+
+  let dias = 0;
+  for (const dia of diasConSesion) {
+    if (dia >= inicioTexto && dia <= hoyTexto) {
+      dias++;
+    }
+  }
+  return dias;
+}
+
 // ---------- Mostrar la racha en pantalla ----------
 
 function pintarRacha(sesiones) {
@@ -168,6 +194,10 @@ function pintarMejorRacha(sesiones) {
 
 function pintarMinutosSemana(sesiones) {
   minutosSemanaNumero.textContent = calcularMinutosSemana(sesiones);
+}
+
+function pintarDiasEstudiadosMes(sesiones) {
+  diasEstudiadosMesNumero.textContent = calcularDiasEstudiadosMes(sesiones);
 }
 
 // ---------- Mostrar la lista de sesiones ----------
@@ -225,6 +255,7 @@ function actualizarPantalla() {
   pintarRacha(sesiones);
   pintarMejorRacha(sesiones);
   pintarMinutosSemana(sesiones);
+  pintarDiasEstudiadosMes(sesiones);
   pintarLista(sesiones);
 }
 

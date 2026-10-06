@@ -3,7 +3,7 @@ Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo qu
 aporte.
 ## Estado actual
 - v1 funcionando: registrar sesiones (fecha, tema, minutos), racha actual, mejor racha
-histórica, minutos estudiados esta semana y lista de sesiones.
+histórica, minutos estudiados esta semana, días estudiados este mes y lista de sesiones.
 - Datos en localStorage.
 ## Decisiones (y por qué)
 - Sin backend ni dependencias: cualquiera debe poder abrirlo con doble clic.
@@ -17,6 +17,8 @@ invertir el array guardado + sort estable por fecha.
 natural de "esta semana" en español. Fechas futuras no suman, extendiendo la misma regla ya
 usada en la racha. Se muestra en tarjeta propia, no junto a racha/mejor racha, para no
 apretar el layout en móvil con 3 números grandes en una fila.
+- Días estudiados este mes: día 1 del mes a hoy, cuenta días únicos (como la racha, no
+suma minutos). Misma tarjeta propia por la razón ya dada arriba.
 ## Aprendizajes y errores a evitar
 - Al cambiar la forma de los datos guardados, migrar con un fallback (ej. `?? sesion.fecha`)
 en vez de descartar lo viejo: así nadie pierde sesiones ya guardadas.
