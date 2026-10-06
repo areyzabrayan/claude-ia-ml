@@ -45,12 +45,23 @@ function sumarDias(fecha, dias) {
 
 // ---------- Almacenamiento ----------
 
+// Convierte una sesión guardada con el formato antiguo (fecha/tema/minutos/creada)
+// al formato actual (date/topic/minutes), para no perder sesiones ya guardadas
+// de antes de este cambio.
+function migrarSesion(sesion) {
+  return {
+    date: sesion.date ?? sesion.fecha,
+    topic: sesion.topic ?? sesion.tema,
+    minutes: sesion.minutes ?? sesion.minutos,
+  };
+}
+
 function cargarSesiones() {
   const datosGuardados = localStorage.getItem(CLAVE_ALMACENAMIENTO);
   if (!datosGuardados) {
     return [];
   }
-  return JSON.parse(datosGuardados);
+  return JSON.parse(datosGuardados).map(migrarSesion);
 }
 
 function guardarSesiones(sesiones) {
@@ -62,7 +73,7 @@ function guardarSesiones(sesiones) {
 // Devuelve el conjunto de fechas (texto "AAAA-MM-DD") que tienen al menos una sesión,
 // sin repetidos. Lo usan tanto calcularRacha como calcularMejorRacha.
 function obtenerDiasConSesion(sesiones) {
-  return new Set(sesiones.map((sesion) => sesion.fecha));
+  return new Set(sesiones.map((sesion) => sesion.date));
 }
 
 // La racha son los días consecutivos con al menos una sesión, terminando hoy.
@@ -153,24 +164,21 @@ function pintarLista(sesiones) {
   }
   mensajeVacio.style.display = "none";
 
-  // De la más reciente a la más antigua.
-  // Si dos sesiones son del mismo día, se muestra primero la que se creó más tarde.
-  const sesionesOrdenadas = [...sesiones].sort((a, b) => {
-    if (a.fecha !== b.fecha) {
-      return a.fecha < b.fecha ? 1 : -1;
-    }
-    return b.creada - a.creada;
-  });
+  // De la más reciente a la más antigua. Si dos sesiones son del mismo día, se
+  // muestra primero la que se añadió más tarde: empezamos invirtiendo el orden
+  // de guardado y luego usamos un sort estable (mantiene ese orden en los
+  // empates) por fecha descendente.
+  const sesionesOrdenadas = [...sesiones].reverse().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 
   for (const sesion of sesionesOrdenadas) {
     const elemento = document.createElement("li");
     elemento.className = "sesion";
     elemento.innerHTML = `
       <div class="sesion-info">
-        <span class="sesion-tema">${escaparHTML(sesion.tema)}</span>
-        <span class="sesion-fecha">${formatearFechaParaMostrar(sesion.fecha)}</span>
+        <span class="sesion-tema">${escaparHTML(sesion.topic)}</span>
+        <span class="sesion-fecha">${formatearFechaParaMostrar(sesion.date)}</span>
       </div>
-      <span class="sesion-minutos">${sesion.minutos} min</span>
+      <span class="sesion-minutos">${sesion.minutes} min</span>
     `;
     listaSesiones.appendChild(elemento);
   }
@@ -206,10 +214,9 @@ function manejarEnvioFormulario(evento) {
   }
 
   const nuevaSesion = {
-    fecha: fecha,
-    tema: tema,
-    minutos: minutos,
-    creada: Date.now(),
+    date: fecha,
+    topic: tema,
+    minutes: minutos,
   };
 
   const sesiones = cargarSesiones();
