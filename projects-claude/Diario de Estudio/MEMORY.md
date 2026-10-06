@@ -19,6 +19,12 @@ usada en la racha. Se muestra en tarjeta propia, no junto a racha/mejor racha, p
 apretar el layout en móvil con 3 números grandes en una fila.
 - Días estudiados este mes: día 1 del mes a hoy, cuenta días únicos (como la racha, no
 suma minutos). Misma tarjeta propia por la razón ya dada arriba.
+- Rediseño visual (vía skill `frontend-design`): se abandonó el "kit de tarjetas SaaS"
+(blanco + sombra gris + acento naranja genérico) por un concepto de "ficha de biblioteca"
+(papel kraft, tinta azul-negra, sello rojo), con números de estadísticas en monoespaciada
+y títulos en serif. Paleta y tipografías documentadas como variables CSS en
+`styles.css` y explicadas en CLAUDE.md § Identidad visual. De paso se corrigió que el foco
+de los inputs no tenía ningún indicador visible (accesibilidad).
 ## Aprendizajes y errores a evitar
 - Al cambiar la forma de los datos guardados, migrar con un fallback (ej. `?? sesion.fecha`)
 en vez de descartar lo viejo: así nadie pierde sesiones ya guardadas.

@@ -11,6 +11,19 @@ programar.
 - Textos de la interfaz en español.
 - Código simple, nombres descriptivos y comentarios solo donde aporten.
 - Diseño limpio y responsive; cualquier pantalla nueva debe verse bien en el móvil.
+## Identidad visual
+- Concepto: "ficha de biblioteca" — papel kraft, ficha de tarjeta, sello de tinta roja.
+Nada de tarjetas blancas con sombra gris ni acento naranja genérico.
+- Colores (variables en `:root` de `styles.css`): `--papel`, `--ficha`, `--tinta`,
+`--tinta-suave`, `--sello`, `--sello-oscuro`, `--sello-suave`, `--linea`. Usa estas
+variables en vez de hex sueltos en nuevas reglas.
+- Tipografía: `--serif` (Georgia) para títulos/encabezados, `--mono` (Courier New) para
+números grandes de estadísticas, `--sans` (sistema) para cuerpo y formulario. Sin fuentes
+externas (Google Fonts, etc.): todo de sistema.
+- El rojo-sello (`--sello`) se usa con moderación: la racha actual (el número
+protagonista), botones y acentos puntuales. Las demás estadísticas van en `--tinta`.
+- `.tarjeta` usa borde fino + regla superior roja, nunca `box-shadow` ni esquinas muy
+redondeadas (radio pequeño, 3px).
 ## Datos
 - localStorage, clave `diario-estudio-sesiones`: array de `{ date: "AAAA-MM-DD", topic,
 minutes }`.
