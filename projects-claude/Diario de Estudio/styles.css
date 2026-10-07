@@ -1,5 +1,19 @@
 /* ---------- Base ---------- */
 
+:root {
+  --papel: #ebe3cc;
+  --ficha: #fffcf5;
+  --tinta: #2b3245;
+  --tinta-suave: #5b6275;
+  --sello: #a13a2e;
+  --sello-oscuro: #832e24;
+  --sello-suave: #f3e1dc;
+  --linea: #d8cba8;
+  --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --mono: "Courier New", ui-monospace, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -7,9 +21,9 @@
 body {
   margin: 0;
   padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-  background-color: #f4f5f7;
-  color: #222222;
+  font-family: var(--sans);
+  background-color: var(--papel);
+  color: var(--tinta);
 }
 
 .contenedor {
@@ -26,28 +40,31 @@ body {
 
 .cabecera h1 {
   margin: 0;
-  font-size: 1.8rem;
+  font-family: var(--serif);
+  font-size: 1.9rem;
 }
 
 .subtitulo {
   margin: 4px 0 0;
-  color: #666666;
+  color: var(--tinta-suave);
   font-size: 0.95rem;
 }
 
 /* ---------- Tarjetas ---------- */
 
 .tarjeta {
-  background-color: #ffffff;
-  border-radius: 12px;
+  background-color: var(--ficha);
+  border: 1px solid var(--linea);
+  border-top: 3px solid var(--sello);
+  border-radius: 3px;
   padding: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .tarjeta h2 {
   margin: 0 0 16px;
-  font-size: 1.1rem;
+  font-family: var(--serif);
+  font-size: 1.15rem;
 }
 
 /* ---------- Racha ---------- */
@@ -64,14 +81,21 @@ body {
 
 .racha-numero {
   margin: 0;
-  font-size: 3rem;
+  font-family: var(--mono);
+  font-size: 2.75rem;
   font-weight: bold;
   line-height: 1;
+  color: var(--tinta);
+}
+
+/* La racha actual es el número protagonista: es el único en rojo-sello. */
+.tarjeta.racha .racha-stat:first-child .racha-numero {
+  color: var(--sello);
 }
 
 .racha-texto {
-  margin: 4px 0 0;
-  color: #666666;
+  margin: 6px 0 0;
+  color: var(--tinta-suave);
 }
 
 /* ---------- Formulario ---------- */
@@ -86,35 +110,43 @@ body {
   margin-bottom: 6px;
   font-size: 0.9rem;
   font-weight: bold;
-  color: #444444;
+  color: var(--tinta);
 }
 
 .campo input {
   padding: 10px 12px;
-  border: 1px solid #d0d0d0;
-  border-radius: 8px;
+  border: 1px solid var(--linea);
+  border-radius: 3px;
   font-size: 1rem;
+  background-color: var(--ficha);
+  color: var(--tinta);
 }
 
-.campo input:focus {
-  outline: none;
-  border-color: #ff6b35;
+.campo input:focus-visible {
+  outline: 2px solid var(--sello);
+  outline-offset: 1px;
+  border-color: var(--sello);
 }
 
 .boton {
   width: 100%;
   padding: 12px;
-  background-color: #ff6b35;
-  color: #ffffff;
+  background-color: var(--sello);
+  color: var(--ficha);
   border: none;
-  border-radius: 8px;
+  border-radius: 3px;
   font-size: 1rem;
   font-weight: bold;
   cursor: pointer;
 }
 
 .boton:hover {
-  background-color: #e85a2a;
+  background-color: var(--sello-oscuro);
+}
+
+.boton:focus-visible {
+  outline: 2px solid var(--tinta);
+  outline-offset: 2px;
 }
 
 /* ---------- Lista de sesiones ---------- */
@@ -131,7 +163,7 @@ body {
   align-items: center;
   gap: 10px;
   padding: 12px 0;
-  border-bottom: 1px solid #eeeeee;
+  border-bottom: 1px solid var(--linea);
 }
 
 .sesion:last-child {
@@ -149,21 +181,22 @@ body {
 
 .sesion-fecha {
   font-size: 0.85rem;
-  color: #888888;
+  color: var(--tinta-suave);
 }
 
 .sesion-minutos {
   flex-shrink: 0;
-  background-color: #fff1ea;
-  color: #ff6b35;
+  font-family: var(--mono);
+  color: var(--sello);
   font-weight: bold;
-  font-size: 0.9rem;
-  padding: 6px 10px;
-  border-radius: 20px;
+  font-size: 0.95rem;
+  padding: 3px 8px;
+  border: 1px solid var(--sello-suave);
+  border-radius: 3px;
 }
 
 .vacio {
-  color: #888888;
+  color: var(--tinta-suave);
   text-align: center;
   margin: 0;
 }
