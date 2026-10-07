@@ -4,10 +4,20 @@
       "type": "http",
       "url": "https://code.claude.com/docs/mcp"
     },
+
     "playwright": {
       "type": "stdio",
       "command": "npx",
       "args": ["-y", "@playwright/mcp@latest"]
-    }
+    },
+    "chrome-devtools": {
+ "type": "local",
+ "command": [
+ "npx",
+ "-y",
+ "chrome-devtools-mcp@latest",
+ "--no-usage-statistics"
+ ]
+ }
   }
 }
