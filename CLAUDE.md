@@ -4,7 +4,8 @@ seguidos. Proyecto didáctico: el código debe poder entenderlo alguien que empi
 programar.
 ## Stack y estructura
 - HTML, CSS y JavaScript puros: sin frameworks, librerías, npm, bundler ni build.
-- `index.html` (estructura), `styles.css` (estilos), `app.js` (lógica y datos).
+- `index.html` (estructura), `styles.css` (estilos), `logic.js` (cálculos puros: fechas,
+rachas, estadísticas), `app.js` (interfaz y `localStorage`), `tests/` (tests de `logic.js`).
 - Debe funcionar abriendo `index.html` con doble clic (`file://`): nada de módulos ES
 (`type="module"`), `fetch` a archivos locales ni nada que requiera servidor.
 - El proyecto vive en la raíz del repo. GitHub Pages publica desde `main` (carpeta raíz),
@@ -49,13 +50,21 @@ tampoco suman aquí.
 - Haz solo lo que se pide: no añadas funcionalidades por tu cuenta.
 - Cambios pequeños y enfocados; no reescribas lo que ya funciona.
 - Al terminar, resume qué has cambiado y cualquier decisión que deba revisar.
+
+## Comandos
+- Tests: `node --test`
+## Reglas
+- Lee `docs/constitution.md` y la spec activa (`specs/NNN-*/`) antes de tocar código.
+
 ## Límites
 - ✅ Siempre: respetar las reglas de fechas y racha, mantener los textos en español.
 - ✅ Siempre: actualizar `MEMORY.md` al terminar cada tarea.
 - ⚠️ Pregunta antes: crear archivos nuevos, cambiar el formato de los datos guardados.
 - 🚫 Nunca: añadir dependencias, frameworks o un paso de build.
 ## Verificación
-- No hay tests ni lint. Probar abriendo `index.html` en el navegador.
+- Lógica: `node --test` (prueba `logic.js`; debe salir todo en verde). Interfaz: después
+de cada cambio, verifica con el MCP de Chrome DevTools: abre `index.html`, prueba la
+funcionalidad, revisa la consola y comprueba la vista móvil.
 - Para empezar de cero: DevTools → Application → Local Storage → borrar la clave
 `diario-estudio-sesiones`.
 

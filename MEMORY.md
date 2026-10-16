@@ -2,34 +2,40 @@
 Memoria del proyecto entre sesiones. Máximo ~50 líneas: resume o elimina lo que ya no
 aporte.
 ## Estado actual
-- v1 funcionando: registrar sesiones (fecha, tema, minutos), racha actual, mejor racha
-histórica, minutos estudiados esta semana, días estudiados este mes y lista de sesiones.
-- Datos en localStorage.
+- v1 funcionando: registrar sesiones (fecha, tema, minutos), racha actual, mejor racha,
+minutos de esta semana, días estudiados este mes y lista de sesiones. Datos en localStorage.
+- Trabajo guiado por specs: `docs/constitution.md` + `specs/NNN-*/` (spec, plan, tasks).
+- Spec 001 (`specs/001-logica-pura/`) **completada** (2026-10-16): cálculos en `logic.js`
+(funciones puras, "hoy" como parámetro), interfaz en `app.js`, 45 tests en
+`tests/logic.test.js` con `node --test`. Identificadores en inglés; comentarios en español.
+- Sin commitear todavía: constitución, specs, logic.js, tests, app.js, index.html, docs.
 ## Decisiones (y por qué)
 - Sin backend ni dependencias: cualquiera debe poder abrirlo con doble clic.
-- Fecha editable en el formulario: permite registrar días pasados y ver la racha crecer.
-- Mejor racha calculada siempre a partir de las sesiones (sin guardar un "high score" aparte
-en localStorage): evita que se desincronice si algún día se añade editar/borrar sesiones.
-- Sesiones guardadas como { date, topic, minutes } (antes { fecha, tema, minutos, creada }),
-para que coincida con CLAUDE.md. Se quitó "creada": el orden del mismo día ahora sale de
-invertir el array guardado + sort estable por fecha.
-- Minutos de la semana: lunes-domingo (local), no ventana móvil de 7 días — es la lectura
-natural de "esta semana" en español. Fechas futuras no suman, extendiendo la misma regla ya
-usada en la racha. Se muestra en tarjeta propia, no junto a racha/mejor racha, para no
-apretar el layout en móvil con 3 números grandes en una fila.
-- Días estudiados este mes: día 1 del mes a hoy, cuenta días únicos (como la racha, no
-suma minutos). Misma tarjeta propia por la razón ya dada arriba.
-- Rediseño visual (vía skill `frontend-design`): se abandonó el "kit de tarjetas SaaS"
-(blanco + sombra gris + acento naranja genérico) por un concepto de "ficha de biblioteca"
-(papel kraft, tinta azul-negra, sello rojo), con números de estadísticas en monoespaciada
-y títulos en serif. Paleta y tipografías documentadas como variables CSS en
-`styles.css` y explicadas en CLAUDE.md § Identidad visual. De paso se corrigió que el foco
-de los inputs no tenía ningún indicador visible (accesibilidad).
-- Repo reestructurado (2026-10-16): el Diario pasó de `projects-claude/Diario de Estudio/`
-a la raíz y se borraron `Primera Landing Page` y la página índice de proyectos. El repo es
-ahora un único proyecto; la URL de Pages apunta directo al Diario.
-## Aprendizajes y errores a evitar
-- Al cambiar la forma de los datos guardados, migrar con un fallback (ej. `?? sesion.fecha`)
-en vez de descartar lo viejo: así nadie pierde sesiones ya guardadas.
-## Próximos pasos
-- (vacío por ahora)
+- Fecha editable en el formulario: permite registrar días pasados.
+- Mejor racha calculada siempre a partir de las sesiones (sin "high score" guardado): no se
+desincroniza si algún día se pueden editar/borrar sesiones.
+- Sesiones `{ date, topic, minutes }`; el formato antiguo `{ fecha, tema, minutos, creada }`
+se migra al cargar (`migrateSession`). El orden del mismo día sale de invertir el array
+guardado + sort estable.
+- Semana = lunes a domingo local; mes = día 1 a hoy. Cada estadística en su propia tarjeta
+para no apretar el móvil.
+- Identidad "ficha de biblioteca" (kraft, tinta, sello rojo): ver CLAUDE.md § Identidad.
+- `logic.js` es un script clásico con `module.exports` condicional al final: el navegador lo
+carga con `<script>` (funciona con `file://`) y Node con `require`. Módulos ES descartados
+(bloqueados en `file://`).
+- "Hoy" se pasa como texto "AAAA-MM-DD" (mismo formato que las sesiones; evita `new Date`
+en UTC). `app.js` lo lee del reloj en un solo sitio (`getTodayKey`) en cada repintado.
+- Principio 3 interpretado como "reciben hoy las funciones que dependen de él".
+## Pendiente (para otras specs; decidir con el usuario)
+- La mejor racha cuenta fechas futuras (comportamiento heredado, se mantuvo a propósito).
+- Un JSON corrupto en localStorage rompe la página. No "arreglar" devolviendo `[]`: el
+siguiente guardado borraría los datos.
+- Ajustar el texto del principio 3 de la constitución a la interpretación de arriba.
+## Errores a evitar
+- Al cambiar la forma de los datos guardados, migrar con un fallback (`??`), nunca
+descartar lo viejo.
+- En Windows/Git Bash, `TZ=... node` NO cambia la zona: fijar `process.env.TZ` dentro del
+proceso. `America/Santiago` (cambio de hora a medianoche) es la zona de peor caso.
+- `logic.js` y `app.js` comparten el ámbito global: no declarar dos veces el mismo nombre.
+- El MCP de Chrome a veces se cuelga con capturas de página completa en móvil: traer la
+pestaña al frente (`select_page`) y capturar solo el viewport.

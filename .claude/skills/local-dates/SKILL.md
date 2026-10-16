@@ -15,7 +15,8 @@ Date("AAAA-MM-DD"): se interpreta en UTC.
 - Nunca uses toISOString() para obtener el día: devuelve la fecha en UTC.
 - Para sumar o restar días, usa setDate(getDate() ± n), nunca milisegundos (24 h no
 siempre es un día por los cambios de hora).
-- Reutiliza las funciones de fechas que ya existan en app.js antes de crear otras nuevas.
+- Reutiliza las funciones de fechas que ya existan en `logic.js` (`toDateKey`, `parseDateKey`,
+`addDays`…) antes de crear otras nuevas. Los cálculos nuevos van en `logic.js` y reciben "hoy".
 ## Checklist de revisión
 - [ ] ¿Algún toISOString() o new Date("AAAA-MM-DD")?
 - [ ] ¿Algún cálculo con 86400000 milisegundos?
