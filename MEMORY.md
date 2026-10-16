@@ -25,6 +25,9 @@ suma minutos). Misma tarjeta propia por la razón ya dada arriba.
 y títulos en serif. Paleta y tipografías documentadas como variables CSS en
 `styles.css` y explicadas en CLAUDE.md § Identidad visual. De paso se corrigió que el foco
 de los inputs no tenía ningún indicador visible (accesibilidad).
+- Repo reestructurado (2026-10-16): el Diario pasó de `projects-claude/Diario de Estudio/`
+a la raíz y se borraron `Primera Landing Page` y la página índice de proyectos. El repo es
+ahora un único proyecto; la URL de Pages apunta directo al Diario.
 ## Aprendizajes y errores a evitar
 - Al cambiar la forma de los datos guardados, migrar con un fallback (ej. `?? sesion.fecha`)
 en vez de descartar lo viejo: así nadie pierde sesiones ya guardadas.
