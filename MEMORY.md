@@ -8,7 +8,7 @@ minutos de esta semana, días estudiados este mes y lista de sesiones. Datos en 
 - Spec 001 (`specs/001-logica-pura/`) **completada** (2026-10-16): cálculos en `logic.js`
 (funciones puras, "hoy" como parámetro), interfaz en `app.js`, 45 tests en
 `tests/logic.test.js` con `node --test`. Identificadores en inglés; comentarios en español.
-- Sin commitear todavía: constitución, specs, logic.js, tests, app.js, index.html, docs.
+- Commit 83422ce en main (2026-10-16), ya en GitHub (Pages publica desde main).
 ## Decisiones (y por qué)
 - Sin backend ni dependencias: cualquiera debe poder abrirlo con doble clic.
 - Fecha editable en el formulario: permite registrar días pasados.
