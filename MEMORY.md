@@ -9,6 +9,14 @@ minutos de esta semana, días estudiados este mes y lista de sesiones. Datos en 
 (funciones puras, "hoy" como parámetro), interfaz en `app.js`, 45 tests en
 `tests/logic.test.js` con `node --test`. Identificadores en inglés; comentarios en español.
 - Commit 83422ce en main (2026-10-16), ya en GitHub (Pages publica desde main).
+- Agentes en `.claude/agents/` (2026-10-19): `coordinator.md` creado (flujo SDD; delega en
+planner, implementer y reviewer, ya con su contenido). El coordinator es agente principal:
+`claude --agent coordinator`. La cabecera de un agente no limita rutas ni comandos: la
+restricción "solo specs/" del planner y "solo node --test / git diff / git status" del
+reviewer van como instrucción. `.claude/settings.json` permite sin preguntar `node --test`,
+`git diff` y `git status` (para toda la sesión, no solo el reviewer).
+El usuario trae los agentes en formato OpenCode; se adaptan a Claude Code (`name`,
+`description`, `tools`; `permissions` se traduce a `tools`, `mode` no existe).
 ## Decisiones (y por qué)
 - Sin backend ni dependencias: cualquiera debe poder abrirlo con doble clic.
 - Fecha editable en el formulario: permite registrar días pasados.
