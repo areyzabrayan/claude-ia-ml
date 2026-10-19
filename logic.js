@@ -134,6 +134,59 @@ function sortSessionsForList(sessions) {
   return [...sessions].reverse().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }
 
+// ---------- Objetivo semanal ----------
+
+// Límites del objetivo semanal en minutos (10080 = los minutos de una semana entera).
+const MIN_WEEKLY_GOAL = 1;
+const MAX_WEEKLY_GOAL = 10080;
+
+// Interpreta un texto (lo escrito en el campo o lo guardado) como objetivo semanal.
+// Devuelve un entero entre MIN_WEEKLY_GOAL y MAX_WEEKLY_GOAL, o null si no vale.
+function parseWeeklyGoal(text) {
+  // null (no hay nada guardado), undefined, números…: no es un texto, así que no vale.
+  if (typeof text !== "string") {
+    return null;
+  }
+
+  // Solo se quitan los espacios de los extremos; los de en medio ("3 00") no valen.
+  const cleanText = text.trim();
+
+  // Solo dígitos 0-9 (al menos uno): fuera signos, puntos, comas, "e", "x" y letras.
+  if (!/^[0-9]+$/.test(cleanText)) {
+    return null;
+  }
+
+  const goal = Number(cleanText); // "0300" → 300
+  if (goal < MIN_WEEKLY_GOAL || goal > MAX_WEEKLY_GOAL) {
+    return null;
+  }
+  return goal;
+}
+
+// Progreso hacia el objetivo: { percent, remaining, done }, o null si no hay objetivo válido.
+// "weekMinutes" es lo que devuelve getWeekMinutes; "goal", el objetivo en minutos.
+function getGoalProgress(weekMinutes, goal) {
+  // Se vuelve a comprobar el objetivo: con uno no válido nunca se divide (ni entre 0).
+  if (!Number.isInteger(goal) || goal < MIN_WEEKLY_GOAL || goal > MAX_WEEKLY_GOAL) {
+    return null;
+  }
+
+  // Si los minutos no son un número normal (un texto, NaN…), se calcula como si fueran 0.
+  const usableMinutes =
+    typeof weekMinutes === "number" && Number.isFinite(weekMinutes) ? weekMinutes : 0;
+
+  // Se multiplica ANTES de dividir: 57 / 100 * 100 daría 56,99… y se redondearía a 56.
+  // Hacia abajo, para no ver nunca 100 % sin haber llegado; y siempre entre 0 y 100.
+  let percent = Math.floor((usableMinutes * 100) / goal);
+  percent = Math.min(100, Math.max(0, percent));
+
+  // Lo que falta nunca es negativo.
+  const remaining = Math.max(0, goal - usableMinutes);
+  const done = usableMinutes >= goal;
+
+  return { percent, remaining, done };
+}
+
 // Solo en Node (tests): exporta las funciones. En el navegador "module" no existe.
 if (typeof module !== "undefined") {
   module.exports = {
@@ -150,5 +203,9 @@ if (typeof module !== "undefined") {
     getMonthStudyDays,
     migrateSession,
     sortSessionsForList,
+    MIN_WEEKLY_GOAL,
+    MAX_WEEKLY_GOAL,
+    parseWeeklyGoal,
+    getGoalProgress,
   };
 }

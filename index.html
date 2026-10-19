@@ -33,6 +33,31 @@
       </div>
     </section>
 
+    <section class="tarjeta objetivo">
+      <h2>Objetivo semanal</h2>
+
+      <p class="objetivo-texto" id="objetivoVacio">Aún no tienes objetivo semanal</p>
+
+      <div id="objetivoProgreso" hidden>
+        <p class="objetivo-texto" id="objetivoLlevas"></p>
+        <div class="objetivo-barra" id="objetivoBarra" role="progressbar"
+             aria-label="Progreso del objetivo semanal"
+             aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="objetivo-barra-relleno" id="objetivoBarraRelleno"></div>
+        </div>
+        <p class="objetivo-texto" id="objetivoFaltan"></p>
+      </div>
+
+      <form id="formObjetivo" novalidate>
+        <div class="campo">
+          <label for="objetivoMinutos">Minutos por semana</label>
+          <input type="text" id="objetivoMinutos" name="objetivoMinutos" inputmode="numeric">
+          <p class="objetivo-error" id="objetivoError" hidden>Escribe un número entero de minutos entre 1 y 10080.</p>
+        </div>
+        <button type="submit" class="boton">Guardar objetivo</button>
+      </form>
+    </section>
+
     <section class="tarjeta mes">
       <div class="racha-stat">
         <p class="racha-numero"><span id="diasEstudiadosMesNumero">0</span> 📅</p>

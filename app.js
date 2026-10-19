@@ -4,6 +4,8 @@
 // ---------- Configuración ----------
 
 const STORAGE_KEY = "diario-estudio-sesiones";
+// El objetivo semanal se guarda como texto plano, por ejemplo "300".
+const GOAL_STORAGE_KEY = "diario-estudio-objetivo-semanal";
 
 // ---------- Referencias al HTML ----------
 
@@ -17,6 +19,16 @@ const streakText = document.getElementById("rachaTexto");
 const bestStreakNumber = document.getElementById("mejorRachaNumero");
 const weekMinutesNumber = document.getElementById("minutosSemanaNumero");
 const monthStudyDaysNumber = document.getElementById("diasEstudiadosMesNumero");
+
+const goalForm = document.getElementById("formObjetivo");
+const goalInput = document.getElementById("objetivoMinutos");
+const goalErrorText = document.getElementById("objetivoError");
+const goalEmptyText = document.getElementById("objetivoVacio");
+const goalProgressBlock = document.getElementById("objetivoProgreso");
+const goalSoFarText = document.getElementById("objetivoLlevas");
+const goalBar = document.getElementById("objetivoBarra");
+const goalBarFill = document.getElementById("objetivoBarraRelleno");
+const goalRemainingText = document.getElementById("objetivoFaltan");
 
 const sessionList = document.getElementById("listaSesiones");
 const emptyMessage = document.getElementById("mensajeVacio");
@@ -42,6 +54,18 @@ function saveSessions(sessions) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(sessions));
 }
 
+// Devuelve el objetivo (1–10080) o null si no hay o el valor guardado está dañado.
+// Nunca borra la clave: un valor dañado se trata como "sin objetivo".
+function loadWeeklyGoal() {
+  return parseWeeklyGoal(localStorage.getItem(GOAL_STORAGE_KEY));
+}
+
+// Guarda solo los dígitos ("300"). Sin try/catch, igual que saveSessions: si el navegador
+// no deja guardar, el error corta el guardado y la pantalla sigue como estaba.
+function saveWeeklyGoal(goal) {
+  localStorage.setItem(GOAL_STORAGE_KEY, String(goal));
+}
+
 // ---------- Mostrar las estadísticas ----------
 
 function renderStreak(sessions, today) {
@@ -54,8 +78,35 @@ function renderBestStreak(sessions) {
   bestStreakNumber.textContent = getBestStreak(sessions);
 }
 
-function renderWeekMinutes(sessions, today) {
-  weekMinutesNumber.textContent = getWeekMinutes(sessions, today);
+// Recibe los minutos ya calculados para que esta tarjeta y la del objetivo
+// muestren exactamente el mismo número.
+function renderWeekMinutes(weekMinutes) {
+  weekMinutesNumber.textContent = weekMinutes;
+}
+
+function renderWeeklyGoal(weekMinutes) {
+  const goal = loadWeeklyGoal();
+  const progress = getGoalProgress(weekMinutes, goal);
+
+  if (progress === null) {
+    goalEmptyText.hidden = false;
+    goalProgressBlock.hidden = true;
+    return;
+  }
+
+  goalEmptyText.hidden = true;
+  goalProgressBlock.hidden = false;
+  goalSoFarText.textContent = `Llevas ${weekMinutes} de ${goal} min esta semana`;
+  goalBarFill.style.width = progress.percent + "%";
+  goalBar.setAttribute("aria-valuenow", progress.percent);
+
+  if (progress.done) {
+    goalRemainingText.textContent = "¡Objetivo cumplido!";
+  } else if (progress.remaining === 1) {
+    goalRemainingText.textContent = "Te falta 1 min";
+  } else {
+    goalRemainingText.textContent = `Te faltan ${progress.remaining} min`;
+  }
 }
 
 function renderMonthStudyDays(sessions, today) {
@@ -108,9 +159,11 @@ function escapeHTML(text) {
 function renderScreen() {
   const sessions = loadSessions();
   const today = getTodayKey(); // se recalcula en cada repintado
+  const weekMinutes = getWeekMinutes(sessions, today); // una sola vez para las dos tarjetas
   renderStreak(sessions, today);
   renderBestStreak(sessions);
-  renderWeekMinutes(sessions, today);
+  renderWeekMinutes(weekMinutes);
+  renderWeeklyGoal(weekMinutes);
   renderMonthStudyDays(sessions, today);
   renderList(sessions);
 }
@@ -138,8 +191,31 @@ function handleFormSubmit(event) {
   renderScreen();
 }
 
+// ---------- Guardar el objetivo semanal ----------
+
+// Se ejecuta con el botón y también al pulsar Enter en el campo.
+function handleGoalSubmit(event) {
+  event.preventDefault();
+
+  const goal = parseWeeklyGoal(goalInput.value);
+  if (goal === null) {
+    // No se guarda nada y el texto escrito se queda en el campo para corregirlo.
+    goalErrorText.hidden = false;
+    return;
+  }
+
+  saveWeeklyGoal(goal);
+  goalErrorText.hidden = true;
+  goalInput.value = String(goal); // sin ceros a la izquierda ni espacios
+  renderScreen();
+}
+
 // ---------- Inicio ----------
 
 dateInput.value = getTodayKey();
+// Solo al cargar: el objetivo guardado o vacío (nunca el valor dañado).
+// renderScreen no toca este campo, así guardar una sesión no borra lo que se esté escribiendo.
+goalInput.value = loadWeeklyGoal() ?? "";
 sessionForm.addEventListener("submit", handleFormSubmit);
+goalForm.addEventListener("submit", handleGoalSubmit);
 renderScreen();

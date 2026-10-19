@@ -98,6 +98,43 @@ body {
   color: var(--tinta-suave);
 }
 
+/* ---------- Objetivo semanal ---------- */
+
+/* Ojo: ninguna regla pone "display" en #objetivoVacio, #objetivoProgreso ni
+   #objetivoError, porque anularía el atributo hidden que los oculta. */
+
+.objetivo-texto {
+  margin: 0 0 8px;
+  color: var(--tinta);
+  overflow-wrap: anywhere;
+}
+
+.objetivo-barra {
+  height: 14px;
+  margin: 10px 0;
+  background-color: var(--papel);
+  border: 1px solid var(--linea);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+/* Sin borde ni ancho mínimo: al 0 % no se ve nada rojo. El ancho lo pone app.js. */
+.objetivo-barra-relleno {
+  height: 100%;
+  width: 0;
+  background-color: var(--sello);
+}
+
+.objetivo-error {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+  color: var(--tinta);
+}
+
+#formObjetivo {
+  margin-top: 16px;
+}
+
 /* ---------- Formulario ---------- */
 
 .campo {

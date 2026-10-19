@@ -18,6 +18,8 @@ const {
   getMonthStudyDays,
   migrateSession,
   sortSessionsForList,
+  parseWeeklyGoal,
+  getGoalProgress,
 } = require("../logic.js");
 
 // Atajo para crear sesiones, como en las tablas de la spec.
@@ -302,5 +304,134 @@ describe("Días estudiados del mes (getMonthStudyDays)", () => {
   test("M4: febrero de año bisiesto", () => {
     const sessions = [s("2028-01-31"), s("2028-02-01"), s("2028-02-29")];
     assert.strictEqual(getMonthStudyDays(sessions, "2028-02-29"), 2);
+  });
+});
+
+describe("Objetivo semanal: interpretar el texto (parseWeeklyGoal)", () => {
+  // Cada fila: [ID de la spec, entrada, resultado esperado]. null = "sin objetivo".
+  const cases = [
+    // L13: entradas que no son un entero entre 1 y 10080.
+    ["L13", "", null],
+    ["L13", "   ", null],
+    ["L13", "0", null],
+    ["L13", "00", null],
+    ["L13", "-5", null],
+    ["L13", "+300", null],
+    ["L13", "abc", null],
+    ["L13", "90.5", null],
+    ["L13", "300.0", null],
+    ["L13", "300,0", null],
+    ["L13", "3e2", null],
+    ["L13", "0x12C", null],
+    ["L13", "3 00", null],
+    ["L13", "10081", null],
+    // L14: los límites se aceptan.
+    ["L14", "1", 1],
+    ["L14", "10080", 10080],
+    // L15: espacios en los extremos y ceros a la izquierda.
+    ["L15", " 0300 ", 300],
+    ["L15", "0001", 1],
+    // L16: valores guardados dañados.
+    ["L16", "abc", null],
+    ["L16", "0", null],
+    ["L16", "-3", null],
+    ["L16", "", null],
+    ["L16", "300.0", null],
+    ["L16", '"300"', null],
+    // L17: valor guardado editado a mano, mismas reglas que la entrada.
+    ["L17", " 0300 ", 300],
+    // L18: sin clave guardada (getItem devuelve null) o sin valor.
+    ["L18", null, null],
+    ["L18", undefined, null],
+  ];
+
+  for (const [id, input, expected] of cases) {
+    test(`${id}: ${String(JSON.stringify(input))} → ${expected}`, () => {
+      assert.strictEqual(parseWeeklyGoal(input), expected);
+    });
+  }
+});
+
+describe("Objetivo semanal: progreso (getGoalProgress)", () => {
+  // Atajo para escribir el resultado esperado en una línea.
+  function progress(percent, remaining, done) {
+    return { percent, remaining, done };
+  }
+
+  test("L2: sin minutos esta semana (0 de 300)", () => {
+    assert.deepStrictEqual(getGoalProgress(0, 300), progress(0, 300, false));
+  });
+
+  test("L3: a mitad (150 de 300)", () => {
+    assert.deepStrictEqual(getGoalProgress(150, 300), progress(50, 150, false));
+  });
+
+  test("L4: a 1 minuto se redondea hacia abajo, no a 100 (299 de 300)", () => {
+    assert.deepStrictEqual(getGoalProgress(299, 300), progress(99, 1, false));
+  });
+
+  test("L5: justo cumplido (300 de 300)", () => {
+    assert.deepStrictEqual(getGoalProgress(300, 300), progress(100, 0, true));
+  });
+
+  test("L6: superado, la barra no pasa de 100 y no falta nada (450 de 300)", () => {
+    assert.deepStrictEqual(getGoalProgress(450, 300), progress(100, 0, true));
+  });
+
+  test("L7: porcentaje no exacto se redondea hacia abajo (2 de 7 → 28)", () => {
+    assert.deepStrictEqual(getGoalProgress(2, 7), progress(28, 5, false));
+  });
+
+  test("Definición (redondeo, D2): 57 de 100 da 57, no 56", () => {
+    assert.deepStrictEqual(getGoalProgress(57, 100), progress(57, 43, false));
+  });
+
+  test("L21: X decimal (150.5 de 300)", () => {
+    assert.deepStrictEqual(getGoalProgress(150.5, 300), progress(50, 149.5, false));
+  });
+
+  test("L22: X negativo (-10 de 300) no baja de 0 % y Z puede superar a Y", () => {
+    assert.deepStrictEqual(getGoalProgress(-10, 300), progress(0, 310, false));
+  });
+
+  test('L23: X texto ("030") se trata como 0', () => {
+    assert.deepStrictEqual(getGoalProgress("030", 300), progress(0, 300, false));
+  });
+
+  test("L23: X NaN se trata como 0", () => {
+    assert.deepStrictEqual(getGoalProgress(NaN, 300), progress(0, 300, false));
+  });
+
+  // L24: Y no válido → "sin objetivo" (null), sin dividir.
+  const invalidGoals = [0, "", "300", undefined, null, 300.5, 10081];
+  for (const goal of invalidGoals) {
+    test(`L24: Y = ${String(JSON.stringify(goal))} → sin objetivo`, () => {
+      assert.strictEqual(getGoalProgress(150, goal), null);
+    });
+  }
+
+  test("L8, L9, L12 (RF12, RF15): con X de getWeekMinutes solo suman las sesiones de esta semana hasta hoy", () => {
+    const today = "2026-10-14"; // miércoles
+    const sessions = [
+      s("2026-10-11", 99), // domingo pasado: no suma (L9)
+      s("2026-10-15", 100), // mañana: no suma (L8)
+      s("2026-10-14", 100), // dos sesiones de hoy: suman las dos (L12)
+      s("2026-10-14", 50),
+    ];
+    const weekMinutes = getWeekMinutes(sessions, today);
+    assert.strictEqual(weekMinutes, 150);
+    assert.deepStrictEqual(getGoalProgress(weekMinutes, 300), progress(50, 150, false));
+  });
+
+  test("L10, L11 (RF12, RF15): en domingo y cruzando el año suman las sesiones de ambos años", () => {
+    const today = "2021-01-03"; // domingo; la semana empieza el lunes 2020-12-28
+    const sessions = [
+      s("2020-12-27", 99), // domingo de la semana anterior: no suma
+      s("2020-12-28", 120), // lunes, año anterior (L11)
+      s("2021-01-02", 180), // sábado, año nuevo (L10)
+    ];
+    const weekMinutes = getWeekMinutes(sessions, today);
+    assert.strictEqual(weekMinutes, 300);
+    assert.deepStrictEqual(getGoalProgress(weekMinutes, 300), progress(100, 0, true));
   });
 });
