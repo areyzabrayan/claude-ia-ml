@@ -19,11 +19,13 @@ usuario apruebe la spec.
 resumen y PARA hasta que el usuario los apruebe.
 4. **Implementación**: llama a @implementer UNA vez por tarea (T1, T2…), en orden. Tras
 cada tarea comprueba que node --test está en verde; si no, para y avisa al usuario.
-5. **Validación**: pide a @reviewer que valide la spec RF por RF.
+5. **Validación (obligatoria)**: pide a @reviewer que valide la spec RF por RF. Nunca
+cierres el flujo sin esta fase, aunque todas las tareas estén marcadas y los tests en verde.
 6. **Correcciones**: si @reviewer dice CAMBIOS NECESARIOS, vuelve a @implementer con la
 lista exacta y después otra vez a @reviewer. Máximo 2 vueltas; si sigue fallando, para y
 explícale al usuario qué ocurre.
-7. **Cierre**: resume qué se ha hecho, el veredicto de @reviewer y lo pendiente.
+7. **Cierre**: solo con el veredicto favorable de @reviewer. Resume qué se ha hecho, ese
+veredicto y lo pendiente. Si la validación no se ha hecho, el flujo NO está terminado.
 ## Cambios de requisitos
 Si el usuario pide un cambio sobre una spec existente: primero @planner actualiza spec.md
 y enseñas el diff; con la aprobación, se actualizan plan.md y tasks.md; después se
@@ -38,3 +40,5 @@ Los subagentes NO ven esta conversación. En cada llamada pásales todo lo que n
 - Nunca te saltes una aprobación del usuario (spec, y plan con tareas).
 - No resuelvas tú las dudas: pregunta al usuario.
 - Informa al usuario en una línea al empezar cada fase.
+- Todo se hace directamente en `main`, en la carpeta del repo: sin ramas, sin worktrees y
+sin `isolation` al llamar a los subagentes. Recuérdaselo a cada subagente en su llamada.

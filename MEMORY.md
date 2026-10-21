@@ -42,10 +42,9 @@ guardado borraría los datos.
 `America/Santiago` es la zona de peor caso.
 - `logic.js` y `app.js` comparten ámbito global: no repetir nombres.
 - Ocultar con `hidden` exige no poner `display` en el CSS de ese elemento.
-- La barra (`.objetivo-barra-relleno`) necesita `width: 0` en CSS: si no, se ve roja antes
-de que cargue `app.js`.
+- `.objetivo-barra-relleno` necesita `width: 0` en CSS (si no, se ve roja al cargar).
 - El Chrome del MCP usa perfil propio (localStorage vacío) y a veces se cuelga con capturas
 completas en móvil: `select_page` y capturar solo el viewport. Para validar sin tocar datos
 reales: `new_page` con `isolatedContext`.
-- El coordinator dejó la spec 002 en un worktree con rama propia, contra la regla de
-trabajar en main: comprobar que los agentes trabajen en main y no se salten la validación.
+- En la spec 002 el coordinator usó un worktree y no validó; desde el 2026-10-21
+`coordinator.md` exige trabajar en main sin worktrees y no cerrar sin @reviewer.
