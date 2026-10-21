@@ -74,10 +74,11 @@ function getStreak(sessions, today) {
 }
 
 // La racha más larga conseguida alguna vez, siga viva o no. Cada tramo se mide por su
-// longitud real (sin la regla de "hoy todavía no ha terminado").
-function getBestStreak(sessions) {
-  // Las claves llevan ceros, así que ordenarlas como texto es ordenarlas por fecha.
-  const sortedDays = [...getStudyDays(sessions)].sort();
+// longitud real (sin la regla de "hoy todavía no ha terminado"). Las fechas futuras no
+// cuentan, igual que en la racha actual.
+function getBestStreak(sessions, today) {
+  // Las claves llevan ceros, así que compararlas u ordenarlas como texto es hacerlo por fecha.
+  const sortedDays = [...getStudyDays(sessions)].filter((day) => day <= today).sort();
 
   let best = 0;
   let current = 0;

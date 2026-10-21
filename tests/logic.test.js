@@ -197,20 +197,20 @@ describe("Mejor racha (getBestStreak)", () => {
   ];
 
   test("B1: sin sesiones es 0", () => {
-    assert.strictEqual(getBestStreak([]), 0);
+    assert.strictEqual(getBestStreak([], "2026-10-15"), 0);
   });
 
   test("B2: una sola sesión es 1", () => {
-    assert.strictEqual(getBestStreak([s("2026-10-14")]), 1);
+    assert.strictEqual(getBestStreak([s("2026-10-14")], "2026-10-15"), 1);
   });
 
   test("B3: un tramo antiguo de 5 gana a la racha actual de 2", () => {
-    assert.strictEqual(getBestStreak(oldRunAndCurrent), 5);
+    assert.strictEqual(getBestStreak(oldRunAndCurrent, "2026-10-15"), 5);
   });
 
   test("B4: el orden del array no importa", () => {
     const shuffled = [4, 0, 6, 2, 5, 1, 3].map((i) => oldRunAndCurrent[i]);
-    assert.strictEqual(getBestStreak(shuffled), 5);
+    assert.strictEqual(getBestStreak(shuffled, "2026-10-15"), 5);
   });
 
   test("B5: empate entre dos tramos de 3", () => {
@@ -222,24 +222,69 @@ describe("Mejor racha (getBestStreak)", () => {
       s("2026-10-02"),
       s("2026-10-03"),
     ];
-    assert.strictEqual(getBestStreak(sessions), 3);
+    assert.strictEqual(getBestStreak(sessions, "2026-10-15"), 3);
   });
 
   test("B6: varias sesiones el mismo día cuentan como un día", () => {
     const sessions = [s("2026-10-14"), s("2026-10-14"), s("2026-10-15")];
-    assert.strictEqual(getBestStreak(sessions), 2);
+    assert.strictEqual(getBestStreak(sessions, "2026-10-15"), 2);
   });
 
   test("B7: cruza el cambio de hora de marzo (Madrid)", () => {
     inZone("Europe/Madrid", () => {
       const sessions = [s("2026-03-28"), s("2026-03-29"), s("2026-03-30")];
-      assert.strictEqual(getBestStreak(sessions), 3);
+      assert.strictEqual(getBestStreak(sessions, "2026-10-15"), 3);
     });
   });
 
   test("B8: cruza el cambio de hora a medianoche (Santiago)", () => {
     const sessions = [s("2026-09-05"), s("2026-09-06"), s("2026-09-07")];
-    assert.strictEqual(getBestStreak(sessions), 3);
+    assert.strictEqual(getBestStreak(sessions, "2026-10-15"), 3);
+  });
+
+  // Revisión 3: las fechas futuras no cuentan para la mejor racha.
+  const runIntoFuture = [
+    s("2026-10-12"),
+    s("2026-10-13"),
+    s("2026-10-14"),
+    s("2026-10-15"),
+    s("2026-10-16"),
+  ];
+
+  test("B9: el tramo se corta en hoy; los días futuros no suman", () => {
+    assert.strictEqual(getBestStreak(runIntoFuture, "2026-10-14"), 3);
+  });
+
+  test("B10: solo sesiones futuras es 0", () => {
+    const sessions = [s("2026-10-15"), s("2026-10-16"), s("2026-10-17")];
+    assert.strictEqual(getBestStreak(sessions, "2026-10-14"), 0);
+  });
+
+  test("B11: un tramo futuro más largo no gana al tramo pasado", () => {
+    const sessions = [
+      s("2026-09-01"),
+      s("2026-09-02"),
+      s("2026-10-20"),
+      s("2026-10-21"),
+      s("2026-10-22"),
+      s("2026-10-23"),
+      s("2026-10-24"),
+    ];
+    assert.strictEqual(getBestStreak(sessions, "2026-10-14"), 2);
+  });
+
+  test("B12: hoy cuenta", () => {
+    const sessions = [s("2026-10-13"), s("2026-10-14")];
+    assert.strictEqual(getBestStreak(sessions, "2026-10-14"), 2);
+  });
+
+  test("B13: sin sesión hoy, igual que la racha actual (R4)", () => {
+    const sessions = [s("2026-10-12"), s("2026-10-13")];
+    assert.strictEqual(getBestStreak(sessions, "2026-10-14"), 2);
+  });
+
+  test("B14: al llegar el día, la sesión que era futura cuenta", () => {
+    assert.strictEqual(getBestStreak(runIntoFuture, "2026-10-15"), 4);
   });
 });
 

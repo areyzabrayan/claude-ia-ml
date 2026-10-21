@@ -19,7 +19,9 @@ comandos van como instrucción (la cabecera no las impone). `.claude/settings.js
 sin preguntar `node --test`, `git diff` y `git status`.
 ## Decisiones (y por qué)
 - Sin backend ni dependencias: cualquiera debe poder abrirlo con doble clic.
-- Mejor racha calculada siempre desde las sesiones (sin "high score" guardado).
+- Mejor racha calculada siempre desde las sesiones (sin "high score" guardado) y, desde la
+revisión 3 de la spec 001 (2026-10-21), sin fechas futuras: `getBestStreak(sessions, today)`.
+Así nunca es menor que la racha actual. Se dejó en la spec 001 a petición del usuario.
 - Sesiones `{ date, topic, minutes }`; el formato antiguo `{ fecha, tema, minutos, creada }`
 se migra al cargar (`migrateSession`).
 - `logic.js` es script clásico con `module.exports` condicional: funciona con `file://` y
@@ -32,7 +34,6 @@ con `require`. "Hoy" se pasa como "AAAA-MM-DD" (`getTodayKey` en `app.js`).
 - `saveWeeklyGoal` sin try/catch, igual que `saveSessions`: si `setItem` falla, nada cambia
 (D10; la spec descarta un tratamiento especial).
 ## Pendiente (para otras specs; decidir con el usuario)
-- La mejor racha cuenta fechas futuras (heredado, se mantuvo a propósito).
 - Un JSON corrupto en localStorage rompe la página. No devolver `[]`: el siguiente
 guardado borraría los datos.
 - Ajustar el principio 3 de la constitución a "reciben hoy las funciones que dependen de él".

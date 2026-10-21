@@ -74,8 +74,8 @@ function renderStreak(sessions, today) {
   streakText.textContent = streak === 1 ? "día de racha" : "días de racha";
 }
 
-function renderBestStreak(sessions) {
-  bestStreakNumber.textContent = getBestStreak(sessions);
+function renderBestStreak(sessions, today) {
+  bestStreakNumber.textContent = getBestStreak(sessions, today);
 }
 
 // Recibe los minutos ya calculados para que esta tarjeta y la del objetivo
@@ -161,7 +161,7 @@ function renderScreen() {
   const today = getTodayKey(); // se recalcula en cada repintado
   const weekMinutes = getWeekMinutes(sessions, today); // una sola vez para las dos tarjetas
   renderStreak(sessions, today);
-  renderBestStreak(sessions);
+  renderBestStreak(sessions, today);
   renderWeekMinutes(weekMinutes);
   renderWeeklyGoal(weekMinutes);
   renderMonthStudyDays(sessions, today);

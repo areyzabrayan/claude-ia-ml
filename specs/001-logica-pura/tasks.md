@@ -155,3 +155,36 @@ racha con fechas futuras, el JSON corrupto, el texto del principio 3).
   - RF: RF13 (criterio 9 de la spec).
   - Hecho cuando: el resumen está en el chat y cada casilla de este archivo está marcada o
   tiene escrito por qué no.
+
+## Revisión 3 — Mejor racha sin fechas futuras (RF4)
+
+Estado: **implementada y verificada** (2026-10-21). Sale del RF4 revisión 3 de `spec.md` y
+del plan §3.3 y D5. Las T01–T22 ya hechas no se tocan. Todo en `main`, sin worktrees.
+
+- [x] **R3-T1 — Tests en rojo.** En `tests/logic.test.js`: B1–B8 pasan a llamar a
+`getBestStreak(sessions, "2026-10-15")`, y se añaden B9–B14 de la spec. Sin tocar
+`logic.js`.
+  - RF: RF4, RF12.
+  - Hecho cuando: `node --test` muestra en verde todos los tests anteriores (B1–B8
+  incluidos: con `today` de más el resultado no cambia) y en rojo B9, B10, B11 y B14. B12
+  y B13 ya pasan con el código actual porque no tienen fechas futuras: son casos de
+  control y se anota así.
+
+- [x] **R3-T2 — Lógica y llamada.** `getBestStreak(sessions, today)` en `logic.js` según
+el plan §3.3 (filtrar `day <= today` antes de ordenar) y actualizar su comentario.
+`renderBestStreak(sessions, today)` en `app.js` y su llamada en `renderScreen`.
+  - RF: RF2, RF4.
+  - Hecho cuando: `node --test` sale **todo en verde**; ningún `getBestStreak(` se llama
+  sin `today` (búsqueda en `app.js` y en los tests); las líneas nuevas de `logic.js` no
+  contienen `toISOString`, `new Date(` ni `document`.
+
+- [x] **R3-T3 — Verificación en el navegador y cierre.** Con Chrome DevTools en un
+contexto aislado (`new_page` con `isolatedContext`; los datos reales no se tocan),
+comprobar los criterios 2–4 de la revisión 3 con datos de prueba: sesiones de anteayer,
+ayer y hoy, y una de mañana. Antes del cambio la mejor racha daba 4; ahora debe dar 3,
+igual que la racha actual, y la semana, el mes, el objetivo y la lista no cambian. Hacer
+lo mismo a 375 px. Después actualizar `MEMORY.md` (quitar este pendiente), poner
+"implementada" en la línea de la revisión 3 de `spec.md` y marcar estas casillas.
+  - RF: RF4, RF11.
+  - Hecho cuando: los criterios 2–4 están anotados como cumplidos, la consola está limpia y
+  `node --test` está en verde.

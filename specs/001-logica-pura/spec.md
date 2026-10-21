@@ -3,6 +3,10 @@
 Estado: **completada (2026-10-16)** (revisión 2). Aprobada por el usuario en el chat al pedir
 implementar T01; plan.md queda aprobado con ella.
 
+**Revisión 3 — implementada y verificada (2026-10-21):** la mejor racha deja de
+contar las fechas futuras (RF4). Es el único cambio de comportamiento de esta spec; ver
+"Cambio de la revisión 3".
+
 ## Por qué
 
 Ahora mismo `app.js` no cumple la constitución:
@@ -35,8 +39,13 @@ de él. `app.js` es el único que lee el reloj, y lo recalcula en cada repintado
 - **RF3 — Racha actual:** días consecutivos con sesión que terminan hoy, o ayer si hoy
 todavía no hay sesión. Varias sesiones el mismo día cuentan una vez y las fechas futuras no
 suman.
-- **RF4 — Mejor racha:** el tramo más largo de días consecutivos, con el comportamiento
-actual (las fechas futuras también cuentan).
+- **RF4 — Mejor racha (revisión 3):** EL SISTEMA muestra como mejor racha el tramo más
+largo de días consecutivos con al menos una sesión, contando solo los días hasta hoy
+(incluido). Varias sesiones el mismo día cuentan una vez. SI hay sesiones con fecha
+posterior a hoy, ENTONCES EL SISTEMA las ignora para la mejor racha, como ya hace con la
+racha actual, la semana y el mes. CUANDO llega el día de una sesión que era futura, esa
+sesión empieza a contar en el siguiente repintado. Por tanto, la mejor racha nunca es
+menor que la racha actual.
 - **RF5 — Minutos de la semana:** de lunes a hoy, ambos incluidos. Suman todas las
 sesiones de cada día y las fechas futuras no suman.
 - **RF6 — Días estudiados del mes:** días únicos con sesión del día 1 a hoy, sin contar
@@ -51,7 +60,8 @@ día, primero la añadida más tarde. No se modifica el array original.
 - **RF10 — `app.js` solo interfaz:** usa `logic.js`, no repite sus funciones y tiene los
 nombres en inglés. `index.html` carga `logic.js` antes.
 - **RF11 — Comportamiento idéntico:** mismas estadísticas, lista, textos, estilos y vista
-móvil, sin errores en la consola.
+móvil, sin errores en la consola. Única excepción, desde la revisión 3: la mejor racha
+con sesiones futuras (RF4).
 - **RF12 — Tests:** con `node --test`, sin instalar nada. La zona horaria se fija dentro
 del proceso y una guarda comprueba que se aplicó. Cubren todos los casos de la sección
 Tests, y se escriben primero en rojo y luego se ponen en verde.
@@ -72,8 +82,8 @@ argumentos) ni nada aleatorio, y no modifica sus argumentos. Se admite
 `new Date(año, mes, día)` para hacer cuentas de calendario. Depende de la zona horaria
 del proceso, y por eso los tests la fijan y la prueban en dos zonas.
 - **Principio 3:** se interpreta así: reciben "hoy" las funciones cuyo resultado depende
-de qué día es hoy. Las que no dependen de él (`getBestStreak`, `getStudyDays`,
-`sortSessionsForList`…) no lo reciben.
+de qué día es hoy. Las que no dependen de él (`getStudyDays`, `sortSessionsForList`…) no
+lo reciben. Desde la revisión 3, la mejor racha sí depende de hoy (RF4) y lo recibe.
 
 ## Fuera de alcance (comportamiento actual que se mantiene tal cual)
 
@@ -82,9 +92,6 @@ de qué día es hoy. Las que no dependen de él (`getBestStreak`, `getStudyDays`
 tocan. La migración del formato antiguo (`fecha/tema/minutos/creada`) se mantiene igual,
 también el detalle de que, al guardar una sesión nueva, se reescribe todo el array en el
 formato nuevo.
-- **La mejor racha cuenta también las fechas futuras.** `CLAUDE.md` solo prohíbe las
-fechas futuras en la racha actual, la semana y el mes. Cambiarlo sería un cambio de
-comportamiento, así que queda para otra spec.
 - **JSON corrupto en `localStorage`:** hoy la página falla al cargar, y así se queda. No
 se debe "arreglar" devolviendo `[]`: el siguiente guardado borraría los datos corruptos y
 el usuario perdería sus sesiones para siempre (principio 5).
@@ -150,7 +157,7 @@ Todas las fechas son texto `"AAAA-MM-DD"` ("clave de día"), salvo donde se indi
 | `obtenerDiasConSesion` | `getStudyDays(sessions)` | sesiones → `Set` de claves |
 | `calcularRacha` | `getStreak(sessions, today)` | → número |
 | `esDiaSiguiente` | `isNextDay(key, nextKey)` | → booleano |
-| `calcularMejorRacha` | `getBestStreak(sessions)` | → número |
+| `calcularMejorRacha` | `getBestStreak(sessions, today)` (revisión 3: recibe hoy) | → número |
 | `obtenerInicioSemana` | `getWeekStart(today)` | clave → clave del lunes |
 | `calcularMinutosSemana` | `getWeekMinutes(sessions, today)` | → número |
 | `obtenerInicioMes` | `getMonthStart(today)` | clave → clave del día 1 |
@@ -171,7 +178,7 @@ se usa `toISOString()` ni `new Date("AAAA-MM-DD")`.
 | `listaSesiones`, `mensajeVacio` | `sessionList`, `emptyMessage` |
 | `hoyLocal` | `getTodayKey()` → `toDateKey(new Date())`, el único sitio que lee el reloj |
 | `cargarSesiones`, `guardarSesiones` | `loadSessions`, `saveSessions` |
-| `pintarRacha`, `pintarMejorRacha` | `renderStreak(sessions, today)`, `renderBestStreak(sessions)` |
+| `pintarRacha`, `pintarMejorRacha` | `renderStreak(sessions, today)`, `renderBestStreak(sessions, today)` (revisión 3) |
 | `pintarMinutosSemana`, `pintarDiasEstudiadosMes` | `renderWeekMinutes(sessions, today)`, `renderMonthStudyDays(sessions, today)` |
 | `formatearFechaParaMostrar`, `pintarLista`, `escaparHTML` | `formatDateForDisplay`, `renderList`, `escapeHTML` |
 | `actualizarPantalla` | `renderScreen()`: calcula `today` con `getTodayKey()` **en cada llamada** y lo pasa |
@@ -215,18 +222,58 @@ lunes; 2028 es bisiesto.
 | R12 | 2026-09-07 | 09-05, 09-06, 09-07 | 3 (cambio de hora a medianoche, Santiago) |
 | R13 [Madrid] | 2026-10-26 | 10-24, 10-25, 10-26 | 3 (cambio de hora de octubre) |
 
-### Mejor racha — `getBestStreak(sessions)`
+### Mejor racha — `getBestStreak(sessions, today)`
 
-| # | Sesiones | Esperado |
-|---|---|---|
-| B1 | ninguna | 0 |
-| B2 | 2026-10-14 | 1 |
-| B3 | 2026-09-01 … 2026-09-05 (5 días) + 2026-10-13, 2026-10-14 | 5 |
-| B4 | las mismas de B3, desordenadas | 5 |
-| B5 | dos tramos de 3 días (09-01…09-03 y 10-01…10-03) | 3 (empate) |
-| B6 | 2026-10-14, 2026-10-14, 2026-10-15 | 2 (varias el mismo día cuentan 1) |
-| B7 [Madrid] | 2026-03-28, 2026-03-29, 2026-03-30 | 3 (cambio de hora de marzo) |
-| B8 | 2026-09-05, 2026-09-06, 2026-09-07 | 3 (Santiago) |
+En B1–B8 hoy es 2026-10-15: ninguna sesión es futura y el resultado no cambia respecto a
+la revisión 2. B9–B14 son de la revisión 3.
+
+| # | Hoy | Sesiones | Esperado |
+|---|---|---|---|
+| B1 | 2026-10-15 | ninguna | 0 |
+| B2 | 2026-10-15 | 2026-10-14 | 1 |
+| B3 | 2026-10-15 | 2026-09-01 … 2026-09-05 (5 días) + 2026-10-13, 2026-10-14 | 5 |
+| B4 | 2026-10-15 | las mismas de B3, desordenadas | 5 |
+| B5 | 2026-10-15 | dos tramos de 3 días (09-01…09-03 y 10-01…10-03) | 3 (empate) |
+| B6 | 2026-10-15 | 2026-10-14, 2026-10-14, 2026-10-15 | 2 (varias el mismo día cuentan 1) |
+| B7 [Madrid] | 2026-10-15 | 2026-03-28, 2026-03-29, 2026-03-30 | 3 (cambio de hora de marzo) |
+| B8 | 2026-10-15 | 2026-09-05, 2026-09-06, 2026-09-07 | 3 (Santiago) |
+| B9 | 2026-10-14 | 10-12, 10-13, 10-14, 10-15, 10-16 (futuras) | 3 (el tramo se corta en hoy) |
+| B10 | 2026-10-14 | 10-15, 10-16, 10-17 (solo futuras) | 0 |
+| B11 | 2026-10-14 | 09-01, 09-02 + 10-20 … 10-24 (5 días futuros) | 2 (el tramo futuro, más largo, no cuenta) |
+| B12 | 2026-10-14 | 10-13, 10-14 | 2 (hoy cuenta) |
+| B13 | 2026-10-14 | 10-12, 10-13 (hoy no) | 2 (igual que la racha actual R4) |
+| B14 | 2026-10-15 | las mismas de B9 (el 10-15 ya es hoy) | 4 (al llegar el día, cuenta) |
+
+### Cambio de la revisión 3 (mejor racha sin fechas futuras)
+
+**Por qué:** la mejor racha era la única estadística que contaba sesiones con fecha
+futura. Una sesión registrada por error en una fecha posterior podía inflarla (por
+ejemplo, "mejor racha 5" con una racha actual de 4). Ahora sigue la misma regla que la
+racha actual, la semana y el mes.
+
+**Casos límite:** B9–B14. Además:
+- Una sesión futura sigue apareciendo en la lista y guardada tal cual; solo deja de
+contar en la mejor racha (en las demás estadísticas ya no contaba).
+- Página abierta pasada la medianoche: la sesión de "mañana" empieza a contar en el
+siguiente repintado (como las demás estadísticas, sin temporizador).
+
+**Fuera de alcance de la revisión 3:**
+- Impedir o avisar al registrar una sesión con fecha futura en el formulario.
+- Borrar, mover o modificar las sesiones futuras ya guardadas.
+- Guardar la mejor racha como "récord" en `localStorage`: se sigue calculando siempre a
+partir de las sesiones.
+- Cambios en las demás estadísticas, la lista, los textos, los estilos o el formato de
+los datos guardados.
+- Los otros pendientes (JSON corrupto, texto del principio 3 de la constitución).
+
+**Criterios de finalización de la revisión 3:**
+1. `node --test` en verde con B1–B14 y todos los demás tests existentes sin cambios.
+2. En el navegador (`file://`, datos de prueba en un contexto aislado) con una sesión de
+mañana que alargaría el tramo de hoy: la mejor racha no la cuenta y no es menor que la
+racha actual; la racha actual, la semana, el mes, el objetivo semanal y la lista no
+cambian respecto a antes del cambio.
+3. `diario-estudio-sesiones` idéntico byte a byte antes y después de cargar la página.
+4. Consola sin errores ni avisos; la vista móvil (375 px) se ve igual.
 
 ### Semana — `getWeekMinutes(sessions, today)`
 

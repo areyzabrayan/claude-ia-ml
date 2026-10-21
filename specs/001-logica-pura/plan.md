@@ -48,7 +48,7 @@ No se tocan `styles.css`, los textos, los IDs ni las clases del HTML. [RF11]
 | `getMonthStart(today)` | clave → clave del día 1 | **sí** | RF6, RF7 |
 | `getStudyDays(sessions)` | sesiones → `Set` de claves | no | RF3, RF4, RF6 |
 | `getStreak(sessions, today)` | → entero ≥ 0 | **sí** | RF3 |
-| `getBestStreak(sessions)` | → entero ≥ 0 | no (comportamiento actual, ver D5) | RF4 |
+| `getBestStreak(sessions, today)` | → entero ≥ 0 | **sí** (revisión 3, ver D5) | RF4 |
 | `getWeekMinutes(sessions, today)` | → entero ≥ 0 | **sí** | RF5 |
 | `getMonthStudyDays(sessions, today)` | → entero ≥ 0 | **sí** | RF6 |
 | `migrateSession(session)` | sesión antigua o nueva → `{ date, topic, minutes }` | no | RF8 |
@@ -106,8 +106,8 @@ Como se cuenta hacia atrás desde hoy o desde ayer, las fechas futuras nunca ent
 ### 3.3 Mejor racha [RF4]
 
 ```
-getBestStreak(sessions):
-    dias ← getStudyDays(sessions) ordenados de menor a mayor
+getBestStreak(sessions, today):
+    dias ← getStudyDays(sessions) con dia ≤ today, ordenados de menor a mayor
     mejor ← 0; enCurso ← 0; anterior ← nada
     para cada dia en dias:
         si anterior existe y isNextDay(anterior, dia): enCurso ← enCurso + 1
@@ -118,7 +118,9 @@ getBestStreak(sessions):
 ```
 
 Ordenar claves `"AAAA-MM-DD"` como texto equivale a ordenarlas por fecha, porque llevan
-ceros.
+ceros. Por lo mismo, `dia <= today` compara bien como texto: es la misma comparación que
+ya usan `getWeekMinutes` y `getMonthStudyDays` para dejar fuera las fechas futuras
+(revisión 3).
 
 ### 3.4 Minutos de la semana [RF5]
 
@@ -166,7 +168,7 @@ renderScreen():
     sessions ← loadSessions()          // localStorage → JSON.parse → migrateSession a cada una
     today    ← getTodayKey()           // se recalcula en CADA repintado
     renderStreak(sessions, today)      // número = getStreak; texto "día"/"días de racha"
-    renderBestStreak(sessions)         // número = getBestStreak
+    renderBestStreak(sessions, today)  // número = getBestStreak (revisión 3: recibe today)
     renderWeekMinutes(sessions, today) // número = getWeekMinutes
     renderMonthStudyDays(sessions, today)
     renderList(sessions)               // usa sortSessionsForList; vacío → mensaje vacío
@@ -191,7 +193,7 @@ y las mismas clases que hoy. `escapeHTML` y `formatDateForDisplay` (que usa
 | D2 | "Hoy" como clave `"AAAA-MM-DD"` | Mismo formato que las sesiones, comparaciones de texto directas y tests legibles. Además impide un `new Date("…")` en UTC. [RF2] | **`Date`:** obliga a convertir en cada comparación y facilita mezclar horas y zonas. |
 | D3 | Cuentas de calendario con `new Date(a, m, d ± n)` | El motor resuelve fin de mes, bisiestos y cambios de hora. [RF7] | **Sumar 86 400 000 ms:** falla los días de 23 o 25 h. **Calcular el calendario a mano:** más código y más bugs. |
 | D4 | `getMonthStart` cortando el texto | `"AAAA-MM-01"` siempre es válido, así que no hace falta pasar por `Date`. [RF6] | Pasar por `Date` y volver: funciona, pero añade una conversión sin motivo. |
-| D5 | `getBestStreak` sin `today` | Mantiene el comportamiento actual (RF4, RF11). Con la interpretación del principio 3 que fija la spec, no depende del día. | **Pasar `today` y descartar las fechas futuras:** cambia lo que ve el usuario. Queda para otra spec. |
+| D5 | `getBestStreak(sessions, today)` descarta los días posteriores a `today` antes de buscar el tramo (revisión 3; antes no recibía `today`) | RF4 revisión 3: la misma regla de fechas futuras que la racha actual, la semana y el mes. Filtrar antes de ordenar deja el bucle igual. | **Seguir sin `today`** (revisión 2): una sesión futura inflaba la mejor racha. **Filtrar dentro del bucle** (`break` al pasar de hoy): funciona por estar ordenado, pero es menos evidente para quien empieza. |
 | D6 | Todas las funciones de `logic.js` exportadas | Las auxiliares (`addDays`, `isNextDay`…) son justo donde suelen estar los bugs de fechas, así que se prueban directamente. [RF12] | **Exportar solo las públicas:** un fallo en `addDays` se vería solo de forma indirecta y costaría encontrarlo. |
 | D7 | Zona horaria fijada con `process.env.TZ` dentro del test | Es lo que funciona en Windows (verificado). Santiago es el peor caso, porque cambia la hora a medianoche. [RF12] | **`TZ=… node --test`:** en Windows no tiene efecto, y los tests pasarían sin probar nada. |
 | D8 | Un único archivo de tests, cambiando a Madrid dentro de los tests [Madrid] y restaurando después | Un solo archivo nuevo (`CLAUDE.md` pide preguntar antes de crear archivos) y todo junto para leerlo. | **Un archivo por zona:** más archivos para 4 tests. |
@@ -205,7 +207,8 @@ y las mismas clases que hoy. `escapeHTML` y `formatDateForDisplay` (que usa
 2. `require("node:test")`, `require("node:assert")` y `require("../logic.js")`.
 3. **Guarda:** un test que comprueba `new Date(2026, 8, 6).getHours() === 1`. Si falla, la
 zona no se aplicó y los tests de cambio de hora no significarían nada.
-4. Un `describe` por función: `getStreak` (R1–R13), `getBestStreak` (B1–B8),
+4. Un `describe` por función: `getStreak` (R1–R13), `getBestStreak` (B1–B14; revisión 3:
+todos con `today`),
 `getWeekMinutes` (W1–W5), `getMonthStudyDays` (M1–M4), utilidades y datos (U1–U14).
 Cada `test` lleva el ID de la spec en su nombre, en español. Ejemplo: "R4: sin sesión hoy
 pero sí ayer, la racha sigue viva".
