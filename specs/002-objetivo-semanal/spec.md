@@ -1,6 +1,7 @@
 # Spec 002 — Objetivo semanal de estudio
 
-Estado: **implementada** (2026-10-19; pendiente de validación del reviewer). Aprobada el
+Estado: **validada** (2026-10-21: todos los RF, RNF y criterios de finalización
+cumplidos; implementada el 2026-10-19). Aprobada el
 2026-10-19 (aprobación transmitida por el coordinador: "Apruebo la spec tal cual",
 incluidas DR1–DR17)
 

@@ -7,8 +7,8 @@ días estudiados este mes y lista. Datos en localStorage. Trabajo guiado por spe
 (`docs/constitution.md` + `specs/NNN-*/`: spec, plan, tasks).
 - Spec 001 (lógica pura en `logic.js`, interfaz en `app.js`, tests con `node --test`)
 completada y publicada (commit 83422ce, 2026-10-16).
-- Spec 002 (objetivo semanal) **implementada** (2026-10-19) en el worktree
-`objetivo-semanal`, pendiente de validación del reviewer y de commit. `logic.js`:
+- Spec 002 (objetivo semanal) **validada** (2026-10-21, todos los RF/RNF y criterios OK)
+y publicada en main. `logic.js`:
 `MIN/MAX_WEEKLY_GOAL`, `parseWeeklyGoal(text)`, `getGoalProgress(weekMinutes, goal)`;
 tarjeta "Objetivo semanal" tras "minutos esta semana". 92 tests en verde.
 - Clave nueva `diario-estudio-objetivo-semanal`: texto plano con solo dígitos (`300`, no
@@ -45,4 +45,7 @@ guardado borraría los datos.
 - La barra (`.objetivo-barra-relleno`) necesita `width: 0` en CSS: si no, se ve roja antes
 de que cargue `app.js`.
 - El Chrome del MCP usa perfil propio (localStorage vacío) y a veces se cuelga con capturas
-completas en móvil: `select_page` y capturar solo el viewport.
+completas en móvil: `select_page` y capturar solo el viewport. Para validar sin tocar datos
+reales: `new_page` con `isolatedContext`.
+- El coordinator dejó la spec 002 en un worktree con rama propia, contra la regla de
+trabajar en main: comprobar que los agentes trabajen en main y no se salten la validación.
